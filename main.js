@@ -443,9 +443,11 @@
       const p = State.playerScore;
       const a = State.aiScore;
       const t = State.targetScore;
-      const diff = Math.abs(p - a);
+      const winBy2 = !!winBy2Toggle.checked;
       const reached = (p >= t || a >= t);
-      const won = State.winBy2 ? (reached && diff >= 2) : reached;
+      const won = !winBy2
+        ? reached
+        : ((p >= t && (p - a) >= 2) || (a >= t && (a - p) >= 2));
 
       if (won) {
         State.mode = "gameover";
