@@ -39,7 +39,6 @@
     const aiDiffInput = document.getElementById("aiDiff");
     const targetScoreInput = document.getElementById("targetScore");
     const modeSelect = document.getElementById("modeSelect");
-    const winBy2Toggle = document.getElementById("winBy2Toggle");
     const colorInput = document.getElementById("color");
     const soundToggle = document.getElementById("soundToggle");
     const netToggle = document.getElementById("netToggle");
@@ -94,7 +93,6 @@
       playerScore: 0, aiScore: 0,
       targetScore: parseInt(targetScoreInput.value, 10),
       highScore: parseInt(localStorage.getItem(LS_KEY)||"0",10),
-      winBy2: winBy2Toggle.checked,
       serveTimer: 0,
       serveDir: "up",
       ball: null,
@@ -113,7 +111,6 @@
         ballSpeed: ballSpeedInput.value,
         aiDiff: aiDiffInput.value,
         targetScore: targetScoreInput.value,
-        winBy2: winBy2Toggle.checked,
         net: netToggle.checked,
         trail: trailToggle.checked,
         sound: soundToggle.checked,
@@ -136,7 +133,6 @@
       if (typeof settings.ballSpeed === "string") ballSpeedInput.value = settings.ballSpeed;
       if (typeof settings.aiDiff === "string") aiDiffInput.value = settings.aiDiff;
       if (typeof settings.targetScore === "string") targetScoreInput.value = settings.targetScore;
-      if (typeof settings.winBy2 === "boolean") winBy2Toggle.checked = settings.winBy2;
       if (typeof settings.net === "boolean") netToggle.checked = settings.net;
       if (typeof settings.trail === "boolean") trailToggle.checked = settings.trail;
       if (typeof settings.sound === "boolean") soundToggle.checked = settings.sound;
@@ -443,11 +439,8 @@
       const p = State.playerScore;
       const a = State.aiScore;
       const t = State.targetScore;
-      const winBy2 = !!winBy2Toggle.checked;
       const reached = (p >= t || a >= t);
-      const won = !winBy2
-        ? reached
-        : ((p >= t && (p - a) >= 2) || (a >= t && (a - p) >= 2));
+      const won = reached;
 
       if (won) {
         State.mode = "gameover";
@@ -534,7 +527,6 @@
     updateScoreDOM();
     showMenu();
     applyGameTypeUI();
-    State.winBy2 = winBy2Toggle.checked;
     saveSettings();
 
     function startGame() {
@@ -543,7 +535,6 @@
       State.playerScore = 0; State.aiScore = 0;
       State.targetScore = parseInt(targetScoreInput.value, 10);
       State.highScore = parseInt(localStorage.getItem(LS_KEY)||"0",10);
-      State.winBy2 = winBy2Toggle.checked;
       applyGameTypeUI();
       if (State.gameType === "ai") applyAIDifficulty();
       resetPositions();
@@ -603,10 +594,6 @@
     targetScoreInput.addEventListener("input", () => {
       State.targetScore = parseInt(targetScoreInput.value, 10);
       targetLabel.textContent = State.targetScore;
-      saveSettings();
-    });
-    winBy2Toggle.addEventListener("change", () => {
-      State.winBy2 = winBy2Toggle.checked;
       saveSettings();
     });
     netToggle.addEventListener("change", saveSettings);
