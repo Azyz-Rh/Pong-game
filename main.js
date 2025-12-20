@@ -102,7 +102,8 @@
       player: { w: 130, h: 14, x: 0, y: 0, prevX: 0, vx: 0, speed: 560, color: "#f8fafc" },
       ai: { w: 130, h: 14, x: 0, y: 0, prevX: 0, vx: 0, color: "#f8fafc", speed: 420, reactionDelay: 0.2, reactionTimer: 0, errorStd: 30, targetX: 0 },
       input: { left:false, right:false, p2left:false, p2right:false },
-      mouse: { inside:false, lastX:null }
+      mouse: { inside:false, lastX:null },
+      pointer: { active: false, id: null }
     };
 
     function saveSettings() {
@@ -639,20 +640,40 @@
     });
 
     canvas.addEventListener("mouseenter", () => { State.mouse.inside = true; });
-    canvas.addEventListener("mouseleave", () => { State.mouse.inside = false; State.mouse.lastX = null; });
+    canvas.addEventListener("mouseleave", () => {
+      if (State.pointer.active) return;
+      State.mouse.inside = false;
+      State.mouse.lastX = null;
+    });
     canvas.addEventListener("mousemove", (e) => {
       const r = canvas.getBoundingClientRect();
       State.mouse.lastX = e.clientX - r.left;
     });
     canvas.addEventListener("pointerdown", (e) => {
       const r = canvas.getBoundingClientRect();
+      State.mouse.inside = true;
+      State.pointer.active = true;
+      State.pointer.id = e.pointerId;
+      try { canvas.setPointerCapture(e.pointerId); } catch { }
+
       const mx = e.clientX - r.left;
+      State.mouse.lastX = mx;
       State.player.x = clamp(mx - State.player.w/2, 0, CW - State.player.w);
     });
     canvas.addEventListener("pointermove", (e) => {
-      if (e.pressure>0 || e.buttons) {
-        const r = canvas.getBoundingClientRect();
-        const mx = e.clientX - r.left;
-        State.player.x = clamp(mx - State.player.w/2, 0, CW - State.player.w);
-      }
+      if (!State.pointer.active || State.pointer.id !== e.pointerId) return;
+      const r = canvas.getBoundingClientRect();
+      const mx = e.clientX - r.left;
+      State.mouse.lastX = mx;
     });
+    function endPointerDrag(e) {
+      if (!State.pointer.active) return;
+      if (State.pointer.id != null && e && e.pointerId != null && State.pointer.id !== e.pointerId) return;
+      try { if (State.pointer.id != null) canvas.releasePointerCapture(State.pointer.id); } catch { }
+      State.pointer.active = false;
+      State.pointer.id = null;
+      State.mouse.lastX = null;
+      State.mouse.inside = false;
+    }
+    canvas.addEventListener("pointerup", endPointerDrag);
+    canvas.addEventListener("pointercancel", endPointerDrag);
