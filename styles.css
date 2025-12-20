@@ -75,6 +75,18 @@
       box-shadow: 0 12px 30px rgba(0,224,255,0.25);
     }
     .btn.ghost { background: transparent; }
+
+    .btn.donate {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--stroke));
+      background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--accent) 14%, transparent),
+        color-mix(in srgb, var(--accent-2) 12%, transparent)
+      );
+    }
+    .btn.donate:hover {
+      border-color: color-mix(in srgb, var(--accent) 75%, var(--stroke));
+    }
     .switch {
       display: inline-flex; align-items: center; gap: 8px;
       border: 1px solid var(--stroke); padding: 6px 10px; border-radius: 20px;
