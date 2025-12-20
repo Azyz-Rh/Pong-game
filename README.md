@@ -18,6 +18,6 @@ python -m http.server 5500
 - `styles.css`: Styles
 - `main.js`: Client-side scripts
 
-## العب الآن
-رابط اللعبة:
+## Play Online
+Game link:
 https://azyz-rh.github.io/Pong-game/
