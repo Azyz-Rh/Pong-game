@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pong</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="main.js"></script>
+</head>
+<body data-theme="dark">
+  <header class="hero" aria-label="رأس الصفحة">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div class="title">Pong</div>
+    </div>
+    <div class="actions">
+      <label class="switch" title="تبديل السِمة">
+        <input id="themeToggle" type="checkbox" />
+        <span>سِمة فاتحة</span>
+      </label>
+      <button class="btn ghost" id="helpBtn">دليل اللعب</button>
+      <button class="btn primary" id="startBtn">ابدأ اللعب</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card game-wrap" aria-label="ساحة اللعبة">
+      <div class="canvas-frame">
+        <canvas id="game" width="900" height="506" aria-label="لوحة اللعب"></canvas>
+
+        <div class="hintbar" id="hintbar">التحكم: ← → أو A/D • الماوس لتحريك المضرب • P إيقاف مؤقت</div>
+
+        <div class="overlay" id="menuOverlay" role="dialog" aria-modal="true">
+          <div class="panel">
+            <h2>جاهز؟ 🎮</h2>
+            <p>اضغط «ابدأ اللعب» أو استعمل الزر أدناه. يمكنك تعديل الإعدادات من اللوحة اليمنى.</p>
+            <button class="btn primary" id="startBigBtn">ابدأ الآن</button>
+          </div>
+        </div>
+
+        <div class="overlay" id="pauseOverlay">
+          <div class="panel">
+            <h2>اللعبة متوقفة مؤقتًا</h2>
+            <p>اضغط «استئناف» لمواصلة اللعب.</p>
+            <button class="btn" id="resumeBtn">استئناف</button>
+          </div>
+        </div>
+
+        <div class="overlay" id="gameoverOverlay">
+          <div class="panel">
+            <h2 id="winnerText">—</h2>
+            <p id="summaryText">—</p>
+            <div style="display:flex; gap:8px; justify-content:center;">
+              <button class="btn primary" id="playAgainBtn">لعب مجددًا</button>
+              <button class="btn" id="resetBtn">رجوع للقائمة</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar" aria-label="شريط أدوات">
+        <button class="btn" id="pauseBtn">إيقاف مؤقت</button>
+        <button class="btn" id="resumeBtn2">استئناف</button>
+        <button class="btn" id="centerServeBtn">إرسال من المنتصف</button>
+        <span class="chip" title="الصوت">
+          <input id="soundToggle" type="checkbox" checked />
+          <span>الصوت</span>
+        </span>
+        <span class="chip">
+          لون الكرة <input id="color" type="color" value="#00e0ff" />
+        </span>
+      </div>
+    </section>
+
+    <aside class="card side" aria-label="لوحة النتائج والإعدادات">
+      <section class="scoreboard" aria-live="polite">
+        <div class="score-line">
+          <div class="me" id="scorePlayer">0</div>
+          <div style="opacity:.6;">—</div>
+          <div class="ai" id="scoreAI">0</div>
+        </div>
+        <div class="score-sub">
+          <div id="labelP1">أنت</div>
+          <div id="labelP2">الذكاء الاصطناعي</div>
+        </div>
+        <div class="score-sub" style="margin-top:10px;">
+          <div>الهدف: <b id="targetLabel">7</b></div>
+          <div>أعلى نتيجة: <b id="highLabel">0</b></div>
+        </div>
+      </section>
+
+      <section class="settings">
+        <h3>الإعدادات</h3>
+        <div class="field">
+          <label>وضع اللعب</label>
+          <select id="modeSelect" class="range" aria-label="وضع اللعب">
+            <option value="ai" selected>ضد الذكاء الاصطناعي</option>
+            <option value="local2">لاعبان محليًا</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>سرعة الكرة</label>
+          <input id="ballSpeed" class="range" type="range" min="160" max="720" step="10" value="360" />
+        </div>
+        <div class="field">
+          <label>صعوبة الذكاء الاصطناعي (1–10)</label>
+          <input id="aiDiff" class="range" type="range" min="1" max="10" step="1" value="6" />
+        </div>
+        <div class="field">
+          <label>هدف النقاط</label>
+          <input id="targetScore" class="range" type="range" min="3" max="15" step="1" value="7" />
+        </div>
+        <div class="field">
+          <label>الفوز بفارق نقطتين</label>
+          <input id="winBy2Toggle" type="checkbox" />
+        </div>
+        <div class="field">
+          <label>عرض خط الوسط</label>
+          <input id="netToggle" type="checkbox" />
+        </div>
+        <div class="field">
+          <label>ذيل مضيء للكرة</label>
+          <input id="trailToggle" type="checkbox" checked />
+        </div>
+      </section>
+    </aside>
+  </main>
+</body>
+</html>
