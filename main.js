@@ -41,8 +41,6 @@
     const modeSelect = document.getElementById("modeSelect");
     const colorInput = document.getElementById("color");
     const soundToggle = document.getElementById("soundToggle");
-    const netToggle = document.getElementById("netToggle");
-    const trailToggle = document.getElementById("trailToggle");
 
     const scorePlayerEl = document.getElementById("scorePlayer");
     const scoreAIEl = document.getElementById("scoreAI");
@@ -111,8 +109,6 @@
         ballSpeed: ballSpeedInput.value,
         aiDiff: aiDiffInput.value,
         targetScore: targetScoreInput.value,
-        net: netToggle.checked,
-        trail: trailToggle.checked,
         sound: soundToggle.checked,
         color: colorInput.value
       };
@@ -133,8 +129,6 @@
       if (typeof settings.ballSpeed === "string") ballSpeedInput.value = settings.ballSpeed;
       if (typeof settings.aiDiff === "string") aiDiffInput.value = settings.aiDiff;
       if (typeof settings.targetScore === "string") targetScoreInput.value = settings.targetScore;
-      if (typeof settings.net === "boolean") netToggle.checked = settings.net;
-      if (typeof settings.trail === "boolean") trailToggle.checked = settings.trail;
       if (typeof settings.sound === "boolean") soundToggle.checked = settings.sound;
       if (typeof settings.color === "string") colorInput.value = settings.color;
     }
@@ -252,18 +246,6 @@
       grd.addColorStop(1, "rgba(255,255,255,0.02)");
       ctx.fillStyle = grd;
       ctx.fillRect(0, 0, CW, CH);
-
-      if (netToggle.checked && State.mode === "playing") {
-        ctx.strokeStyle = "rgba(255,255,255,0.25)";
-        ctx.lineWidth = 3;
-        ctx.setLineDash([10, 12]);
-        ctx.beginPath();
-        const cx = CW / 2;
-        ctx.moveTo(cx, 0);
-        ctx.lineTo(cx, CH);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
     }
 
     function drawRoundedRect(x, y, w, h, r) {
@@ -285,7 +267,7 @@
     }
 
     function drawBall(b) {
-      if (trailToggle.checked && State.trail.length > 1) {
+      if (State.trail.length > 1) {
         for (let i = 0; i < State.trail.length; i++) {
           const t = i / State.trail.length;
           const p = State.trail[i];
@@ -596,8 +578,6 @@
       targetLabel.textContent = State.targetScore;
       saveSettings();
     });
-    netToggle.addEventListener("change", saveSettings);
-    trailToggle.addEventListener("change", saveSettings);
     soundToggle.addEventListener("change", saveSettings);
 
     window.addEventListener("keydown", (e) => {
