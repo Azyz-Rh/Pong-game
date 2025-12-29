@@ -561,6 +561,8 @@
     function applyGameTypeUI() {
       State.gameType = modeSelect.value === "local2" ? "local2" : "ai";
 
+      document.body.classList.toggle("local2", State.gameType === "local2");
+
       if (labelP1) labelP1.textContent = getPlayerName(1);
 
       if (State.gameType === "local2") {
