@@ -142,7 +142,7 @@
       border-radius: 14px;
       border: 1px solid var(--stroke);
       overflow: hidden;
-      width: 80%;
+      width: 88%;
       margin-inline: auto;
       aspect-ratio: 900 / 506;
       background:
@@ -239,7 +239,7 @@
 
       /* Make the playfield take more vertical space on phones */
       .canvas-frame {
-        width: 77%;
+        width: 85%;
         margin-inline: auto;
         aspect-ratio: auto;
         height: 56dvh;
