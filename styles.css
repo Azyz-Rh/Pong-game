@@ -209,7 +209,8 @@
 
       /* Make the playfield take more vertical space on phones */
       .canvas-frame {
-        width: 100%;
+        width: 96%;
+        margin-inline: auto;
         aspect-ratio: auto;
         height: min(78dvh, 680px);
       }
