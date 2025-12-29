@@ -36,7 +36,6 @@
     const resumeBtn2 = document.getElementById("resumeBtn2");
     const resetBtn = document.getElementById("resetBtn");
     const playAgainBtn = document.getElementById("playAgainBtn");
-    const centerServeBtn = document.getElementById("centerServeBtn");
 
     const settingsBtn = document.getElementById("settingsBtn");
     const settingsBackdrop = document.getElementById("settingsBackdrop");
@@ -650,11 +649,6 @@
       resetPositions();
       updateScoreDOM();
       showMenu();
-    });
-
-    centerServeBtn.addEventListener("click", () => {
-      if (State.mode !== "playing") return;
-      spawnBall(Math.random()<0.5 ? "up" : "down");
     });
 
     helpBtn.addEventListener("click", () => {
