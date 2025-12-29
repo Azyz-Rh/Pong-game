@@ -3,9 +3,12 @@
     const ctx = canvas.getContext("2d");
 
     let CW = 0, CH = 0;
+    let IS_MOBILE = window.matchMedia && window.matchMedia("(max-width: 980px)").matches;
 
     function scaleCanvasForDPR() {
-      const dpr = window.devicePixelRatio || 1;
+      IS_MOBILE = window.matchMedia && window.matchMedia("(max-width: 980px)").matches;
+      const rawDpr = window.devicePixelRatio || 1;
+      const dpr = IS_MOBILE ? Math.min(rawDpr, 2) : rawDpr;
       const rect = canvas.getBoundingClientRect();
       const displayWidth  = rect.width;
       const displayHeight = rect.height;
@@ -316,7 +319,7 @@
 
       ctx.save();
       ctx.shadowColor = b.color;
-      ctx.shadowBlur = 18;
+      ctx.shadowBlur = IS_MOBILE ? 10 : 18;
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
       ctx.closePath();
@@ -448,7 +451,8 @@
       collideWithPaddle(b, State.ai, false);
 
       State.trail.push({x:b.x, y:b.y});
-      if (State.trail.length > 20) State.trail.shift();
+      const maxTrail = IS_MOBILE ? 12 : 20;
+      if (State.trail.length > maxTrail) State.trail.shift();
 
       if (b.y - b.r <= -8) {
         State.playerScore++;
