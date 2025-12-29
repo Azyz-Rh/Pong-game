@@ -208,7 +208,10 @@
       .game-wrap { padding: 10px; }
 
       /* Make the playfield take more vertical space on phones */
-      .canvas-frame { height: min(72dvh, 560px); }
+      .canvas-frame {
+        width: 100%;
+        max-height: 72dvh;
+      }
 
       /* Settings are tucked behind a button on mobile */
       .side { display: none; }
