@@ -207,6 +207,9 @@
       .layout { width: min(1100px, 100vw); gap: 12px; }
       .game-wrap { padding: 10px; }
 
+      /* On mobile, avoid covering the top paddle */
+      .hintbar { display: none; }
+
       /* Make the playfield take more vertical space on phones */
       .canvas-frame {
         width: 96%;
