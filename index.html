@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pong</title>
-  <link rel="stylesheet" href="styles.css?v=20251229_3" />
-  <script defer src="main.js?v=20251229_3"></script>
+  <link rel="stylesheet" href="styles.css?v=20251230_1" />
+  <script defer src="main.js?v=20251230_1"></script>
 </head>
 <body data-theme="dark">
   <header class="hero" aria-label="رأس الصفحة">
@@ -26,6 +26,32 @@
 
   <main class="layout">
     <section class="card game-wrap" aria-label="ساحة اللعبة">
+      <section class="scoreboard" aria-live="polite">
+        <div class="score-line">
+          <div class="me" id="scorePlayer">0</div>
+          <div style="opacity:.6;">—</div>
+          <div class="ai" id="scoreAI">0</div>
+        </div>
+        <div class="score-sub">
+          <div id="labelP1">لاعب 1</div>
+          <div id="labelP2">الذكاء الاصطناعي</div>
+        </div>
+        <div class="score-sub" style="margin-top:10px;">
+          <div>الهدف: <b id="targetLabel">7</b></div>
+          <div>أعلى نتيجة: <b id="highLabel">0</b></div>
+        </div>
+        <div class="names" aria-label="أسماء اللاعبين">
+          <label class="name-field">
+            <span>اسم اللاعب 1</span>
+            <input id="nameP1" type="text" autocomplete="nickname" inputmode="text" placeholder="لاعب 1" />
+          </label>
+          <label class="name-field">
+            <span>اسم اللاعب 2</span>
+            <input id="nameP2" type="text" autocomplete="nickname" inputmode="text" placeholder="لاعب 2" />
+          </label>
+        </div>
+      </section>
+
       <div class="canvas-frame">
         <canvas id="game" width="900" height="506" aria-label="لوحة اللعب"></canvas>
 
@@ -75,22 +101,6 @@
     </section>
 
     <aside class="card side" aria-label="لوحة النتائج والإعدادات">
-      <section class="scoreboard" aria-live="polite">
-        <div class="score-line">
-          <div class="me" id="scorePlayer">0</div>
-          <div style="opacity:.6;">—</div>
-          <div class="ai" id="scoreAI">0</div>
-        </div>
-        <div class="score-sub">
-          <div id="labelP1">أنت</div>
-          <div id="labelP2">الذكاء الاصطناعي</div>
-        </div>
-        <div class="score-sub" style="margin-top:10px;">
-          <div>الهدف: <b id="targetLabel">7</b></div>
-          <div>أعلى نتيجة: <b id="highLabel">0</b></div>
-        </div>
-      </section>
-
       <section class="settings">
         <h3>الإعدادات</h3>
         <div class="field">

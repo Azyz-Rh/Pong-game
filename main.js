@@ -56,6 +56,8 @@
     const hintbar = document.getElementById("hintbar");
     const labelP1 = document.getElementById("labelP1");
     const labelP2 = document.getElementById("labelP2");
+    const nameP1Input = document.getElementById("nameP1");
+    const nameP2Input = document.getElementById("nameP2");
 
     const menuOverlay = document.getElementById("menuOverlay");
     const pauseOverlay = document.getElementById("pauseOverlay");
@@ -149,7 +151,9 @@
         aiDiff: aiDiffInput.value,
         targetScore: targetScoreInput.value,
         sound: soundToggle.checked,
-        color: colorInput.value
+        color: colorInput.value,
+        nameP1: nameP1Input ? nameP1Input.value : "",
+        nameP2: nameP2Input ? nameP2Input.value : ""
       };
       try { localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(settings)); } catch { }
     }
@@ -170,6 +174,18 @@
       if (typeof settings.targetScore === "string") targetScoreInput.value = settings.targetScore;
       if (typeof settings.sound === "boolean") soundToggle.checked = settings.sound;
       if (typeof settings.color === "string") colorInput.value = settings.color;
+
+      if (nameP1Input && typeof settings.nameP1 === "string") nameP1Input.value = settings.nameP1;
+      if (nameP2Input && typeof settings.nameP2 === "string") nameP2Input.value = settings.nameP2;
+    }
+
+    function getPlayerName(which) {
+      if (which === 1) {
+        const v = nameP1Input ? nameP1Input.value.trim() : "";
+        return v || "لاعب 1";
+      }
+      const v = nameP2Input ? nameP2Input.value.trim() : "";
+      return v || "لاعب 2";
     }
 
     function updateHintbar() {
@@ -545,8 +561,15 @@
     function applyGameTypeUI() {
       State.gameType = modeSelect.value === "local2" ? "local2" : "ai";
 
-      labelP1.textContent = "أنت";
-      labelP2.textContent = State.gameType === "local2" ? "لاعب 2" : "الذكاء الاصطناعي";
+      if (labelP1) labelP1.textContent = getPlayerName(1);
+
+      if (State.gameType === "local2") {
+        if (labelP2) labelP2.textContent = getPlayerName(2);
+        if (nameP2Input) nameP2Input.disabled = false;
+      } else {
+        if (labelP2) labelP2.textContent = "الذكاء الاصطناعي";
+        if (nameP2Input) nameP2Input.disabled = true;
+      }
 
       State.baseHint = State.gameType === "local2"
         ? "التحكم: أنت ← → أو A/D • لاعب 2: J/L • لمس: أسفل للمضرب السفلي وأعلى للمضرب العلوي • P إيقاف مؤقت"
@@ -562,6 +585,19 @@
     showMenu();
     applyGameTypeUI();
     saveSettings();
+
+    if (nameP1Input) {
+      nameP1Input.addEventListener("input", () => {
+        if (labelP1) labelP1.textContent = getPlayerName(1);
+        saveSettings();
+      });
+    }
+    if (nameP2Input) {
+      nameP2Input.addEventListener("input", () => {
+        if (State.gameType === "local2" && labelP2) labelP2.textContent = getPlayerName(2);
+        saveSettings();
+      });
+    }
 
     function startGame() {
       initAudio();

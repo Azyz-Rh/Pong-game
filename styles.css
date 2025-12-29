@@ -112,6 +112,28 @@
     }
 
     .game-wrap { position: relative; padding: 14px; }
+
+    .game-wrap .scoreboard { margin-bottom: 12px; }
+
+    .names {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .name-field { display: grid; gap: 6px; font-weight: 600; color: var(--muted); font-size: 13px; }
+    .name-field input {
+      border: 1px solid var(--stroke);
+      background: var(--card);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font: inherit;
+      box-shadow: var(--shadow);
+      backdrop-filter: var(--glass);
+      outline: none;
+    }
+    .name-field input:disabled { opacity: 0.6; cursor: not-allowed; }
     .canvas-frame {
       position: relative;
       border-radius: 14px;
@@ -217,6 +239,8 @@
         aspect-ratio: auto;
         height: 70dvh;
       }
+
+      .names { grid-template-columns: 1fr; }
 
       /* Settings are tucked behind a button on mobile */
       .side { display: none; }
