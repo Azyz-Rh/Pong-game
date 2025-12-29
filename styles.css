@@ -161,6 +161,11 @@
       background: rgba(255,255,255,0.03);
     }
 
+    /* Desktop: settings are already visible in the side panel */
+    @media (min-width: 981px) {
+      #settingsBtn { display: none; }
+    }
+
     .side { display: grid; gap: 12px; padding: 14px; }
     .scoreboard, .settings {
       border: 1px solid var(--stroke);
