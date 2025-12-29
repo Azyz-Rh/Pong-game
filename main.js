@@ -556,7 +556,7 @@
     function showPause() { pauseOverlay.classList.add("show"); }
     function showGameOver() {
       const isLocal = State.gameType === "local2";
-      const p1Name = isLocal ? getPlayerName(1) : "أنت";
+      const p1Name = isLocal ? getPlayerName(1) : ((nameP1Input && nameP1Input.value.trim()) ? getPlayerName(1) : "أنت");
       const p2Name = isLocal ? getPlayerName(2) : "الذكاء الاصطناعي";
 
       const p1Score = State.playerScore;
@@ -566,11 +566,11 @@
 
       winnerText.textContent = isLocal
         ? `فاز ${winnerName} 🏆`
-        : (p1Win ? "أنت الفائز! 🎉" : `فاز ${p2Name} 🤖`);
+        : (p1Win ? `فاز ${p1Name} 🎉` : `فاز ${p2Name} 🤖`);
 
       summaryText.textContent = isLocal
         ? `النتيجة — ${p1Name}: ${p1Score} • ${p2Name}: ${p2Score}`
-        : `النتيجة — أنت: ${p1Score} • ${p2Name}: ${p2Score}`;
+        : `النتيجة — ${p1Name}: ${p1Score} • ${p2Name}: ${p2Score}`;
       gameoverOverlay.classList.add("show");
     }
 
