@@ -551,10 +551,22 @@
     }
     function showPause() { pauseOverlay.classList.add("show"); }
     function showGameOver() {
-      const playerWin = State.playerScore > State.aiScore;
-      const oppName = State.gameType === "local2" ? "لاعب 2" : "الذكاء الاصطناعي";
-      winnerText.textContent = playerWin ? "أنت الفائز! 🎉" : `فاز ${oppName} ${State.gameType === "local2" ? "🏆" : "🤖"}`;
-      summaryText.textContent = `النتيجة — أنت: ${State.playerScore} • ${oppName}: ${State.aiScore}`;
+      const isLocal = State.gameType === "local2";
+      const p1Name = isLocal ? getPlayerName(1) : "أنت";
+      const p2Name = isLocal ? getPlayerName(2) : "الذكاء الاصطناعي";
+
+      const p1Score = State.playerScore;
+      const p2Score = State.aiScore;
+      const p1Win = p1Score > p2Score;
+      const winnerName = p1Win ? p1Name : p2Name;
+
+      winnerText.textContent = isLocal
+        ? `فاز ${winnerName} 🏆`
+        : (p1Win ? "أنت الفائز! 🎉" : `فاز ${p2Name} 🤖`);
+
+      summaryText.textContent = isLocal
+        ? `النتيجة — ${p1Name}: ${p1Score} • ${p2Name}: ${p2Score}`
+        : `النتيجة — أنت: ${p1Score} • ${p2Name}: ${p2Score}`;
       gameoverOverlay.classList.add("show");
     }
 
