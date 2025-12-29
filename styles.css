@@ -254,7 +254,7 @@
         width: 96%;
         margin-inline: auto;
         aspect-ratio: auto;
-        height: 100dvh;
+        height: 60dvh;
       }
 
       #game { height: 100%; }
