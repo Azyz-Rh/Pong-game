@@ -180,6 +180,15 @@
     .score-line .ai { color: var(--danger); text-align: center; }
     .score-sub { display: flex; justify-content: space-between; color: var(--muted); font-weight: 600; margin-top: 6px; font-size: 14px; }
     .settings h3 { margin: 0 0 8px; font-size: 16px; }
+    .settings-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .settings-head h3 { margin: 0; }
+    .close-settings-btn { display: none; }
     .field { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; margin: 8px 0; }
     .range { width: 180px; }
     select.range {
@@ -258,6 +267,7 @@
         overflow: auto;
         overscroll-behavior: contain;
       }
+      body.show-settings .close-settings-btn { display: inline-flex; }
       .settings-backdrop {
         display: block;
         position: fixed;

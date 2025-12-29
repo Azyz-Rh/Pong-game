@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pong</title>
-  <link rel="stylesheet" href="styles.css?v=20251230_7" />
-  <script defer src="main.js?v=20251230_7"></script>
+  <link rel="stylesheet" href="styles.css?v=20251230_8" />
+  <script defer src="main.js?v=20251230_8"></script>
 </head>
 <body data-theme="dark">
   <header class="hero" aria-label="رأس الصفحة">
@@ -92,7 +92,10 @@
 
     <aside class="card side" aria-label="لوحة النتائج والإعدادات">
       <section class="settings">
-        <h3>الإعدادات</h3>
+        <div class="settings-head">
+          <h3>الإعدادات</h3>
+          <button class="btn ghost close-settings-btn" id="closeSettingsBtn" type="button">إغلاق</button>
+        </div>
         <div class="field">
           <label>وضع اللعب</label>
           <select id="modeSelect" class="range" aria-label="وضع اللعب">

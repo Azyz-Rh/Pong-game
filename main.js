@@ -40,6 +40,7 @@
 
     const settingsBtn = document.getElementById("settingsBtn");
     const settingsBackdrop = document.getElementById("settingsBackdrop");
+    const closeSettingsBtn = document.getElementById("closeSettingsBtn");
 
     const ballSpeedInput = document.getElementById("ballSpeed");
     const aiDiffInput = document.getElementById("aiDiff");
@@ -697,6 +698,9 @@
     }
     if (settingsBackdrop) {
       settingsBackdrop.addEventListener("click", () => setSettingsOpen(false));
+    }
+    if (closeSettingsBtn) {
+      closeSettingsBtn.addEventListener("click", () => setSettingsOpen(false));
     }
 
     window.addEventListener("keydown", (e) => {
