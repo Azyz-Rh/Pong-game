@@ -35,6 +35,9 @@
     const playAgainBtn = document.getElementById("playAgainBtn");
     const centerServeBtn = document.getElementById("centerServeBtn");
 
+    const settingsBtn = document.getElementById("settingsBtn");
+    const settingsBackdrop = document.getElementById("settingsBackdrop");
+
     const ballSpeedInput = document.getElementById("ballSpeed");
     const aiDiffInput = document.getElementById("aiDiff");
     const targetScoreInput = document.getElementById("targetScore");
@@ -98,9 +101,40 @@
       player: { w: 130, h: 14, x: 0, y: 0, prevX: 0, vx: 0, speed: 560, color: "#f8fafc" },
       ai: { w: 130, h: 14, x: 0, y: 0, prevX: 0, vx: 0, color: "#f8fafc", speed: 420, reactionDelay: 0.2, reactionTimer: 0, errorStd: 30, targetX: 0 },
       input: { left:false, right:false, p2left:false, p2right:false },
-      mouse: { inside:false, lastX:null },
-      pointer: { active: false, id: null }
+      mouse: { inside:false, x:null },
+      aim: { p1x: null, p2x: null },
+      pointers: {
+        active: Object.create(null)
+      }
     };
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function smoothAlpha(dt, tau = 0.055) {
+      if (!Number.isFinite(dt) || dt <= 0) return 1;
+      const a = 1 - Math.exp(-dt / tau);
+      return clamp(a, 0, 1);
+    }
+
+    function clientToCanvas(e) {
+      const r = canvas.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+
+    function recomputeAimFromPointers() {
+      let p1 = null;
+      let p2 = null;
+      for (const id in State.pointers.active) {
+        const p = State.pointers.active[id];
+        if (!p) continue;
+        if (p.role === "p1") {
+          if (!p1 || p.t > p1.t) p1 = p;
+        } else if (p.role === "p2") {
+          if (!p2 || p.t > p2.t) p2 = p;
+        }
+      }
+      State.aim.p1x = p1 ? p1.x : null;
+      State.aim.p2x = p2 ? p2.x : null;
+    }
 
     function saveSettings() {
       const settings = {
@@ -307,10 +341,13 @@
       if (State.input.right) vx += p.speed;
       p.x += vx * dt;
 
-      if (State.mouse.inside && State.mouse.lastX != null) {
-        const target = State.mouse.lastX - p.w/2;
-        const blend = 0.35;
-        p.x = p.x*(1-blend) + target*blend;
+      const pointerX = State.aim.p1x;
+      const mouseX = (State.mouse.inside && State.mouse.x != null) ? State.mouse.x : null;
+      const inputX = (pointerX != null) ? pointerX : mouseX;
+      if (inputX != null) {
+        const target = inputX - p.w/2;
+        const a = smoothAlpha(dt);
+        p.x = lerp(p.x, target, a);
       }
       p.x = clamp(p.x, 0, CW - p.w);
       p.y = CH - 26;
@@ -326,6 +363,13 @@
       if (State.input.p2left) vx -= p2.speed;
       if (State.input.p2right) vx += p2.speed;
       p2.x += vx * dt;
+
+      const inputX = State.aim.p2x;
+      if (inputX != null) {
+        const target = inputX - p2.w/2;
+        const a = smoothAlpha(dt);
+        p2.x = lerp(p2.x, target, a);
+      }
       p2.x = clamp(p2.x, 0, CW - p2.w);
       p2.y = 14;
 
@@ -497,8 +541,8 @@
       labelP2.textContent = State.gameType === "local2" ? "لاعب 2" : "الذكاء الاصطناعي";
 
       State.baseHint = State.gameType === "local2"
-        ? "التحكم: أنت ← → أو A/D • لاعب 2: J/L • P إيقاف مؤقت"
-        : "التحكم: ← → أو A/D • الماوس لتحريك المضرب • P إيقاف مؤقت";
+        ? "التحكم: أنت ← → أو A/D • لاعب 2: J/L • لمس: أسفل للمضرب السفلي وأعلى للمضرب العلوي • P إيقاف مؤقت"
+        : "التحكم: ← → أو A/D • الماوس/اللمس لتحريك المضرب • P إيقاف مؤقت";
       updateHintbar();
 
       aiDiffInput.disabled = (State.gameType === "local2");
@@ -556,8 +600,8 @@
 
     helpBtn.addEventListener("click", () => {
       const msg = State.gameType === "local2"
-        ? "وضع لاعبَين: اللاعب 1 (أسفل): أسهم ←/→ أو A/D. اللاعب 2 (أعلى): J/L.\nمفتاح P للإيقاف المؤقت.\nاضبط سرعة الكرة وهدف النقاط من لوحة الإعدادات."
-        : "التحكم: أسهم ←/→ أو A/D لتحريك المضرب. يمكنك أيضًا التحريك بالماوس داخل اللوحة.\nمفتاح P للإيقاف المؤقت.\nاضبط الصعوبة وسرعة الكرة وهدف النقاط من لوحة الإعدادات.";
+        ? "وضع لاعبَين: اللاعب 1 (أسفل): أسهم ←/→ أو A/D. اللاعب 2 (أعلى): J/L.\nعلى الهاتف: المس في النصف السفلي لتحريك المضرب السفلي، والمس في النصف العلوي لتحريك المضرب العلوي (يمكن استعمال إصبعين).\nمفتاح P للإيقاف المؤقت.\nاضبط سرعة الكرة وهدف النقاط من لوحة الإعدادات."
+        : "التحكم: أسهم ←/→ أو A/D لتحريك المضرب. يمكنك أيضًا التحريك بالماوس/اللمس داخل اللوحة.\nمفتاح P للإيقاف المؤقت.\nاضبط الصعوبة وسرعة الكرة وهدف النقاط من لوحة الإعدادات.";
       alert(msg);
     });
 
@@ -580,8 +624,28 @@
     });
     soundToggle.addEventListener("change", saveSettings);
 
+    function setSettingsOpen(open) {
+      document.body.classList.toggle("show-settings", !!open);
+      if (!settingsBackdrop) return;
+      settingsBackdrop.hidden = !open;
+      settingsBackdrop.setAttribute("aria-hidden", open ? "false" : "true");
+    }
+
+    if (settingsBtn) {
+      settingsBtn.addEventListener("click", () => {
+        const open = !document.body.classList.contains("show-settings");
+        setSettingsOpen(open);
+      });
+    }
+    if (settingsBackdrop) {
+      settingsBackdrop.addEventListener("click", () => setSettingsOpen(false));
+    }
+
     window.addEventListener("keydown", (e) => {
       const k = e.key.toLowerCase();
+      if (e.key === "Escape") {
+        if (document.body.classList.contains("show-settings")) setSettingsOpen(false);
+      }
       if (e.key === "ArrowLeft" || k === "a") State.input.left = true;
       if (e.key === "ArrowRight" || k === "d") State.input.right = true;
       if (State.gameType === "local2") {
@@ -610,39 +674,61 @@
 
     canvas.addEventListener("mouseenter", () => { State.mouse.inside = true; });
     canvas.addEventListener("mouseleave", () => {
-      if (State.pointer.active) return;
+      if (Object.keys(State.pointers.active).length > 0) return;
       State.mouse.inside = false;
-      State.mouse.lastX = null;
+      State.mouse.x = null;
     });
     canvas.addEventListener("mousemove", (e) => {
       const r = canvas.getBoundingClientRect();
-      State.mouse.lastX = e.clientX - r.left;
+      State.mouse.x = e.clientX - r.left;
     });
-    canvas.addEventListener("pointerdown", (e) => {
-      const r = canvas.getBoundingClientRect();
+
+    function pointerRoleFromPos(pos) {
+      if (State.gameType !== "local2") return "p1";
+      return (pos.y > CH/2) ? "p1" : "p2";
+    }
+
+    function handlePointerDown(e) {
+      if (e.pointerType === "touch") e.preventDefault();
+      const pos = clientToCanvas(e);
       State.mouse.inside = true;
-      State.pointer.active = true;
-      State.pointer.id = e.pointerId;
+
+      const role = pointerRoleFromPos(pos);
+      State.pointers.active[String(e.pointerId)] = { role, x: pos.x, y: pos.y, t: performance.now() };
       try { canvas.setPointerCapture(e.pointerId); } catch { }
 
-      const mx = e.clientX - r.left;
-      State.mouse.lastX = mx;
-      State.player.x = clamp(mx - State.player.w/2, 0, CW - State.player.w);
-    });
-    canvas.addEventListener("pointermove", (e) => {
-      if (!State.pointer.active || State.pointer.id !== e.pointerId) return;
-      const r = canvas.getBoundingClientRect();
-      const mx = e.clientX - r.left;
-      State.mouse.lastX = mx;
-    });
-    function endPointerDrag(e) {
-      if (!State.pointer.active) return;
-      if (State.pointer.id != null && e && e.pointerId != null && State.pointer.id !== e.pointerId) return;
-      try { if (State.pointer.id != null) canvas.releasePointerCapture(State.pointer.id); } catch { }
-      State.pointer.active = false;
-      State.pointer.id = null;
-      State.mouse.lastX = null;
-      State.mouse.inside = false;
+      if (role === "p1") {
+        State.player.x = clamp(pos.x - State.player.w/2, 0, CW - State.player.w);
+      }
+      recomputeAimFromPointers();
     }
-    canvas.addEventListener("pointerup", endPointerDrag);
-    canvas.addEventListener("pointercancel", endPointerDrag);
+
+    function handlePointerMove(e) {
+      if (e.pointerType === "touch") e.preventDefault();
+      const key = String(e.pointerId);
+      const p = State.pointers.active[key];
+      if (!p) return;
+      const pos = clientToCanvas(e);
+      p.x = pos.x;
+      p.y = pos.y;
+      p.t = performance.now();
+      recomputeAimFromPointers();
+    }
+
+    function handlePointerEnd(e) {
+      const key = String(e.pointerId);
+      if (State.pointers.active[key]) {
+        try { canvas.releasePointerCapture(e.pointerId); } catch { }
+        delete State.pointers.active[key];
+        recomputeAimFromPointers();
+      }
+      if (Object.keys(State.pointers.active).length === 0) {
+        State.mouse.inside = false;
+        State.mouse.x = null;
+      }
+    }
+
+    canvas.addEventListener("pointerdown", handlePointerDown, { passive: false });
+    canvas.addEventListener("pointermove", handlePointerMove, { passive: false });
+    canvas.addEventListener("pointerup", handlePointerEnd);
+    canvas.addEventListener("pointercancel", handlePointerEnd);
