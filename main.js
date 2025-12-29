@@ -102,7 +102,7 @@
       ai: { w: 130, h: 14, x: 0, y: 0, prevX: 0, vx: 0, color: "#f8fafc", speed: 420, reactionDelay: 0.2, reactionTimer: 0, errorStd: 30, targetX: 0 },
       input: { left:false, right:false, p2left:false, p2right:false },
       mouse: { inside:false, x:null },
-      aim: { p1x: null, p2x: null },
+      aim: { p1x: null, p2x: null, p1type: null, p2type: null },
       pointers: {
         active: Object.create(null)
       }
@@ -134,6 +134,8 @@
       }
       State.aim.p1x = p1 ? p1.x : null;
       State.aim.p2x = p2 ? p2.x : null;
+      State.aim.p1type = p1 ? p1.type : null;
+      State.aim.p2type = p2 ? p2.type : null;
     }
 
     function saveSettings() {
@@ -346,8 +348,9 @@
       const inputX = (pointerX != null) ? pointerX : mouseX;
       if (inputX != null) {
         const target = inputX - p.w/2;
-        const a = smoothAlpha(dt);
-        p.x = lerp(p.x, target, a);
+        const isTouch = (pointerX != null) && (State.aim.p1type === "touch");
+        if (isTouch) p.x = target;
+        else p.x = lerp(p.x, target, smoothAlpha(dt));
       }
       p.x = clamp(p.x, 0, CW - p.w);
       p.y = CH - 26;
@@ -367,8 +370,9 @@
       const inputX = State.aim.p2x;
       if (inputX != null) {
         const target = inputX - p2.w/2;
-        const a = smoothAlpha(dt);
-        p2.x = lerp(p2.x, target, a);
+        const isTouch = (State.aim.p2type === "touch");
+        if (isTouch) p2.x = target;
+        else p2.x = lerp(p2.x, target, smoothAlpha(dt));
       }
       p2.x = clamp(p2.x, 0, CW - p2.w);
       p2.y = 14;
@@ -694,7 +698,7 @@
       State.mouse.inside = true;
 
       const role = pointerRoleFromPos(pos);
-      State.pointers.active[String(e.pointerId)] = { role, x: pos.x, y: pos.y, t: performance.now() };
+      State.pointers.active[String(e.pointerId)] = { role, x: pos.x, y: pos.y, t: performance.now(), type: e.pointerType || "unknown" };
       try { canvas.setPointerCapture(e.pointerId); } catch { }
 
       if (role === "p1") {
@@ -712,6 +716,7 @@
       p.x = pos.x;
       p.y = pos.y;
       p.t = performance.now();
+      p.type = e.pointerType || p.type || "unknown";
       recomputeAimFromPointers();
     }
 
