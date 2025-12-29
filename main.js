@@ -8,27 +8,8 @@
     function scaleCanvasForDPR() {
       IS_MOBILE = window.matchMedia && window.matchMedia("(max-width: 980px)").matches;
 
-      if (IS_MOBILE) {
-        const frame = canvas.parentElement;
-        if (frame) {
-          const fw = frame.clientWidth;
-          const fh = frame.clientHeight;
-          const ratio = 900 / 506;
-
-          let fitW = fw;
-          let fitH = fw / ratio;
-          if (fitH > fh) {
-            fitH = fh;
-            fitW = fh * ratio;
-          }
-
-          canvas.style.width = `${Math.max(1, Math.floor(fitW))}px`;
-          canvas.style.height = `${Math.max(1, Math.floor(fitH))}px`;
-        }
-      } else {
-        canvas.style.width = "";
-        canvas.style.height = "";
-      }
+      canvas.style.width = "";
+      canvas.style.height = "";
 
       const rawDpr = window.devicePixelRatio || 1;
       const dpr = IS_MOBILE ? Math.min(rawDpr, 2) : rawDpr;

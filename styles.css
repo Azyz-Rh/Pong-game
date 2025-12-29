@@ -251,14 +251,12 @@
 
       /* Make the playfield take more vertical space on phones */
       .canvas-frame {
-        width: 85%;
+        width: min(96%, calc(70dvh * 900 / 506));
         margin-inline: auto;
-        aspect-ratio: auto;
-        height: 56dvh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        aspect-ratio: 900 / 506;
       }
+
+      #game { height: 100%; }
 
       .names { grid-template-columns: 1fr; }
 
