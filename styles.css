@@ -116,14 +116,15 @@
     .game-wrap .scoreboard { margin-bottom: 12px; }
 
     .names {
-      display: none;
+      display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-top: 10px;
       padding-top: 10px;
       border-top: 1px solid var(--stroke);
     }
-    body.local2 .names { display: grid; }
+    .name-field.p2 { display: none; }
+    body.local2 .name-field.p2 { display: grid; }
     .name-field { display: grid; gap: 6px; font-weight: 600; color: var(--muted); font-size: 13px; }
     .name-field input {
       border: 1px solid var(--stroke);
