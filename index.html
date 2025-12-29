@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pong</title>
-  <link rel="stylesheet" href="styles.css?v=20251230_2" />
-  <script defer src="main.js?v=20251230_2"></script>
+  <link rel="stylesheet" href="styles.css?v=20251230_3" />
+  <script defer src="main.js?v=20251230_3"></script>
 </head>
 <body data-theme="dark">
   <header class="hero" aria-label="رأس الصفحة">
@@ -39,16 +39,6 @@
         <div class="score-sub" style="margin-top:10px;">
           <div>الهدف: <b id="targetLabel">7</b></div>
           <div>أعلى نتيجة: <b id="highLabel">0</b></div>
-        </div>
-        <div class="names" id="namesWrap" aria-label="أسماء اللاعبين">
-          <label class="name-field">
-            <span>اسم اللاعب 1</span>
-            <input id="nameP1" type="text" autocomplete="nickname" inputmode="text" placeholder="لاعب 1" />
-          </label>
-          <label class="name-field">
-            <span>اسم اللاعب 2</span>
-            <input id="nameP2" type="text" autocomplete="nickname" inputmode="text" placeholder="لاعب 2" />
-          </label>
         </div>
       </section>
 
@@ -110,6 +100,18 @@
             <option value="local2">لاعبان محليًا</option>
           </select>
         </div>
+
+        <div class="names" id="namesWrap" aria-label="أسماء اللاعبين">
+          <label class="name-field">
+            <span>اسم اللاعب 1</span>
+            <input id="nameP1" type="text" autocomplete="nickname" inputmode="text" placeholder="لاعب 1" />
+          </label>
+          <label class="name-field">
+            <span>اسم اللاعب 2</span>
+            <input id="nameP2" type="text" autocomplete="nickname" inputmode="text" placeholder="لاعب 2" />
+          </label>
+        </div>
+
         <div class="field">
           <label>سرعة الكرة</label>
           <input id="ballSpeed" class="range" type="range" min="160" max="720" step="10" value="360" />
