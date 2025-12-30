@@ -6,8 +6,15 @@
     let IS_MOBILE = window.matchMedia && window.matchMedia("(max-width: 980px)").matches;
 
     let _canvasRect = null;
+    let _canvasRectAt = 0;
     function updateCanvasRect() {
       _canvasRect = canvas.getBoundingClientRect();
+      _canvasRectAt = performance.now();
+      return _canvasRect;
+    }
+    function maybeUpdateCanvasRect(now) {
+      const t = (typeof now === "number" && now > 0) ? now : performance.now();
+      if (!_canvasRect || (t - _canvasRectAt) > 80) updateCanvasRect();
       return _canvasRect;
     }
 
@@ -136,11 +143,12 @@
     }
 
     function recomputeAimFromPointers() {
-      const TOUCH_LEAD_MS = 18;
       function aimXFromPointer(p) {
         if (!p) return null;
         if (p.type === "touch" && Number.isFinite(p.vx)) {
-          return clamp(p.x + p.vx * TOUCH_LEAD_MS, 0, CW);
+          const speed = Math.abs(p.vx); // px per ms
+          const leadMs = clamp(10 + speed * 20, 12, 38);
+          return clamp(p.x + p.vx * leadMs, 0, CW);
         }
         return p.x;
       }
@@ -795,6 +803,9 @@
       const p = State.pointers.active[key];
       if (!p) return;
 
+      const now = (typeof e.timeStamp === "number" && e.timeStamp > 0) ? e.timeStamp : performance.now();
+      maybeUpdateCanvasRect(now);
+
       const events = (typeof e.getCoalescedEvents === "function") ? e.getCoalescedEvents() : [e];
       for (const ev of events) {
         const t = (typeof ev.timeStamp === "number" && ev.timeStamp > 0) ? ev.timeStamp : performance.now();
@@ -817,6 +828,15 @@
         p.y = pos.y;
         p.t = t;
         p.type = ev.pointerType || p.type || "unknown";
+      }
+
+      // Update paddles immediately for touch to minimize perceived latency.
+      if (p.type === "touch") {
+        if (p.role === "p1") {
+          State.player.x = clamp(p.x - State.player.w / 2, 0, CW - State.player.w);
+        } else if (p.role === "p2" && State.gameType === "local2") {
+          State.ai.x = clamp(p.x - State.ai.w / 2, 0, CW - State.ai.w);
+        }
       }
       recomputeAimFromPointers();
     }
