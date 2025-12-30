@@ -5,6 +5,12 @@
     let CW = 0, CH = 0;
     let IS_MOBILE = window.matchMedia && window.matchMedia("(max-width: 980px)").matches;
 
+    let _canvasRect = null;
+    function updateCanvasRect() {
+      _canvasRect = canvas.getBoundingClientRect();
+      return _canvasRect;
+    }
+
     function scaleCanvasForDPR() {
       IS_MOBILE = window.matchMedia && window.matchMedia("(max-width: 980px)").matches;
 
@@ -13,7 +19,7 @@
 
       const rawDpr = window.devicePixelRatio || 1;
       const dpr = IS_MOBILE ? Math.min(rawDpr, 2) : rawDpr;
-      const rect = canvas.getBoundingClientRect();
+      const rect = updateCanvasRect();
       const displayWidth  = rect.width;
       const displayHeight = rect.height;
 
@@ -125,11 +131,20 @@
     }
 
     function clientToCanvas(e) {
-      const r = canvas.getBoundingClientRect();
+      const r = _canvasRect || updateCanvasRect();
       return { x: e.clientX - r.left, y: e.clientY - r.top };
     }
 
     function recomputeAimFromPointers() {
+      const TOUCH_LEAD_MS = 18;
+      function aimXFromPointer(p) {
+        if (!p) return null;
+        if (p.type === "touch" && Number.isFinite(p.vx)) {
+          return clamp(p.x + p.vx * TOUCH_LEAD_MS, 0, CW);
+        }
+        return p.x;
+      }
+
       let p1 = null;
       let p2 = null;
       for (const id in State.pointers.active) {
@@ -141,8 +156,8 @@
           if (!p2 || p.t > p2.t) p2 = p;
         }
       }
-      State.aim.p1x = p1 ? p1.x : null;
-      State.aim.p2x = p2 ? p2.x : null;
+      State.aim.p1x = p1 ? aimXFromPointer(p1) : null;
+      State.aim.p2x = p2 ? aimXFromPointer(p2) : null;
       State.aim.p1type = p1 ? p1.type : null;
       State.aim.p2type = p2 ? p2.type : null;
     }
@@ -739,7 +754,7 @@
       State.mouse.x = null;
     });
     canvas.addEventListener("mousemove", (e) => {
-      const r = canvas.getBoundingClientRect();
+      const r = _canvasRect || updateCanvasRect();
       State.mouse.x = e.clientX - r.left;
     });
 
@@ -750,11 +765,22 @@
 
     function handlePointerDown(e) {
       if (e.pointerType === "touch") e.preventDefault();
+      updateCanvasRect();
       const pos = clientToCanvas(e);
       State.mouse.inside = true;
 
       const role = pointerRoleFromPos(pos);
-      State.pointers.active[String(e.pointerId)] = { role, x: pos.x, y: pos.y, t: performance.now(), type: e.pointerType || "unknown" };
+      const t = (typeof e.timeStamp === "number" && e.timeStamp > 0) ? e.timeStamp : performance.now();
+      State.pointers.active[String(e.pointerId)] = {
+        role,
+        x: pos.x,
+        y: pos.y,
+        t,
+        type: e.pointerType || "unknown",
+        vx: 0,
+        lastX: pos.x,
+        lastT: t
+      };
       try { canvas.setPointerCapture(e.pointerId); } catch { }
 
       if (role === "p1") {
@@ -768,11 +794,30 @@
       const key = String(e.pointerId);
       const p = State.pointers.active[key];
       if (!p) return;
-      const pos = clientToCanvas(e);
-      p.x = pos.x;
-      p.y = pos.y;
-      p.t = performance.now();
-      p.type = e.pointerType || p.type || "unknown";
+
+      const events = (typeof e.getCoalescedEvents === "function") ? e.getCoalescedEvents() : [e];
+      for (const ev of events) {
+        const t = (typeof ev.timeStamp === "number" && ev.timeStamp > 0) ? ev.timeStamp : performance.now();
+        const pos = clientToCanvas(ev);
+
+        const dtMs = t - (p.lastT || t);
+        if (dtMs > 0) {
+          const instVx = (pos.x - (p.lastX != null ? p.lastX : p.x)) / dtMs; // px per ms
+          if (Number.isFinite(instVx)) {
+            // light smoothing to avoid jitter while staying very responsive
+            p.vx = (p.vx * 0.35) + (instVx * 0.65);
+          }
+        } else {
+          p.vx = 0;
+        }
+
+        p.lastX = pos.x;
+        p.lastT = t;
+        p.x = pos.x;
+        p.y = pos.y;
+        p.t = t;
+        p.type = ev.pointerType || p.type || "unknown";
+      }
       recomputeAimFromPointers();
     }
 
@@ -791,5 +836,6 @@
 
     canvas.addEventListener("pointerdown", handlePointerDown, { passive: false });
     canvas.addEventListener("pointermove", handlePointerMove, { passive: false });
+    canvas.addEventListener("pointerrawupdate", handlePointerMove, { passive: false });
     canvas.addEventListener("pointerup", handlePointerEnd);
     canvas.addEventListener("pointercancel", handlePointerEnd);
